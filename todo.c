@@ -47,6 +47,8 @@ int main(int argc, char *argv[]) {
 	fseek(file, 0, SEEK_END);
 	ulong file_size = ftell(file);
 	fseek(file, 0, SEEK_SET);
+	char *content = malloc(file_size+1);
+	fread(content, 1, file_size, file);
 
 	int start_line = 0;
 
