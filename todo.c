@@ -7,26 +7,21 @@ char VERSION[] = "0.1";
 
 int size_y, size_x;
 
-void display_page(FILE *file, int start_line, int end_line) {
-	char buffer[1024];
-	int line_count = 0;
-	fseek(file, 0, SEEK_SET);
-	while (fgets(buffer, sizeof(buffer), file) != NULL) {
-		if (line_count >= start_line && line_count <= end_line) {
-			printw("%s", buffer);
-		}
-		line_count++;
+void display_page(const char content[], int start_line, int end_line) {
+	ulong i = 0;
+	ulong line = 0;
 
-		if (line_count > end_line) {
-			break;
-		}
-
+	while (content[i] != '\0' && line <= end_line) {
+		if (line >= start_line && line <= end_line)
+			printw("%c", content[i]);
+		if (content[i] == '\n')
+			line++;
+		i++;
 	}
-	if (line_count <= end_line) {
+
+	if (content[i] == '\0')
 		printw("\n");
-	}
 }
-
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
@@ -39,16 +34,18 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	initscr();  // Initialize the curses library
-	raw();      // Disable line buffering
-	keypad(stdscr, TRUE); // Enable special keys
-	noecho();   // Don't display input characters
+	initscr();		// Initialize the curses library
+	raw();			// Disable line buffering
+	keypad(stdscr, TRUE);	// Enable special keys
+	noecho();   		// Don't display input characters
 
 	fseek(file, 0, SEEK_END);
 	ulong file_size = ftell(file);
 	fseek(file, 0, SEEK_SET);
 	char *content = malloc(file_size+1);
 	fread(content, 1, file_size, file);
+	content[file_size] = '\0';
+
 
 	int start_line = 0;
 
@@ -64,7 +61,8 @@ int main(int argc, char *argv[]) {
 		printw("%s", argv[1]);
 		attroff(A_REVERSE);
 		move(1, 0);
-		display_page(file, start_line, size_y - 2 + start_line);
+		display_page(content, start_line, size_y - 2 + start_line);
+		move(size_y-1, 0);
 		refresh();
 
 		ch = getch();
@@ -83,7 +81,8 @@ int main(int argc, char *argv[]) {
 	} while (ch != 'q');
 
 	endwin(); // Clean up and close the curses library
-
 	fclose(file);
+
+	free(content);
 	return EXIT_SUCCESS;
 }
