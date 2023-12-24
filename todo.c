@@ -3,6 +3,8 @@
 #include <ncurses.h>
 #include <string.h>
 
+#define ulong unsigned long
+
 char VERSION[] = "0.1";
 int TAB = 2;
 int PADDING = 1;
@@ -10,7 +12,7 @@ int PADDING = 1;
 int size_y, size_x;
 
 void display_page(const char content[], int start_line, int end_line) {
-/*a*/	ulong i = 0;
+	ulong i = 0;
 	ulong line = 0;
 	ulong col = 0;
 
