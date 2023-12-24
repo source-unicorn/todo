@@ -94,6 +94,13 @@ int main(int argc, char *argv[]) {
 	int start_line = 0;
 	int end_line = 0;
 	int cur_line = 0;
+	int max_line = 0;
+	int i = 0;
+	while (content[i] != '\0') {
+		max_line += content[i] == '\n';
+		i++;
+	}
+
 
 	int ch;
 	do {
