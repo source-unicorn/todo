@@ -4,24 +4,46 @@
 #include <string.h>
 
 char VERSION[] = "0.1";
+int TAB = 2;
+int PADDING = 1;
 
 int size_y, size_x;
 
 void display_page(const char content[], int start_line, int end_line) {
-	ulong i = 0;
+/*a*/	ulong i = 0;
 	ulong line = 0;
+	ulong col = 0;
 
 	printw(" ");
 	while (content[i] != '\0' && line <= end_line) {
-		if (line >= start_line && line <= end_line) {
-			printw("%c", content[i]);
-			if (content[i] == '\n') {
-				printw(" ");
+		if (line >= start_line && line <= end_line && col <= size_x) {
+			switch (content[i]) {
+				case '\n':
+					printw("\n");
+					for (int p=0;p<PADDING;p++) {
+						printw(" ");
+					}
+					break;
+				case '\t':
+					for (int p=0;p<TAB-(col%TAB);p++) {
+						printw(" ");
+					}
+					break;
+				default:
+					printw("%c", content[i]);
+					break;
 			}
+
+			if (content[i] == '\t') {
+				col+=TAB-1;
+			}
+			col++;
 		}
 
-		if (content[i] == '\n')
+		if (content[i] == '\n') {
+			col = 0;
 			line++;
+		}
 		i++;
 	}
 
@@ -29,11 +51,24 @@ void display_page(const char content[], int start_line, int end_line) {
 		printw("\n");
 }
 
+void display_top_bar(char filename[]) {
+		move(0, 0);
+		attron(A_REVERSE);
+		hline(' ', size_x);
+		printw("\r  TODO %s", VERSION);
+		move( 0, (size_x-strlen(filename))*0.5);
+		printw("%s", filename);
+		attroff(A_REVERSE);
+		move(1, 0);
+}
+
 int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
+
+	char* filename = argv[1];
 
 	FILE *file = fopen(argv[1], "r");
 	if (file == NULL) {
@@ -63,14 +98,7 @@ int main(int argc, char *argv[]) {
 		getmaxyx(stdscr, size_y, size_x);
 		end_line = size_y - 2 + start_line;
 
-		move(0, 0);
-		attron(A_REVERSE);
-		hline(' ', size_x);
-		printw("\r  TODO %s", VERSION);
-		move( 0, (size_x-strlen(argv[1]))*0.5);
-		printw("%s", argv[1]);
-		attroff(A_REVERSE);
-		move(1, 0);
+		display_top_bar(filename);
 		display_page(content, start_line, end_line);
 		move(cur_line-start_line+1, 0);
 		refresh();
