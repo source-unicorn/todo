@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
 		i++;
 	}
 
-
 	int ch;
 	do {
 		getmaxyx(stdscr, size_y, size_x);
@@ -128,7 +127,7 @@ int main(int argc, char *argv[]) {
 				break;
 		}
 
-	} while (ch != 'q');
+	} while (ch != 24); // ^X
 
 	endwin(); // Clean up and close the curses library
 	fclose(file);
