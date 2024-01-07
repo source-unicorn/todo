@@ -18,7 +18,7 @@ void display_page(const char content[], int start_line, int end_line) {
 
 	printw(" ");
 	while (content[i] != '\0' && line <= end_line) {
-		if (line >= start_line && line <= end_line && col <= size_x) {
+		if (line >= start_line && line <= end_line && col < size_x-1) {
 			switch (content[i]) {
 				case '\n':
 					printw("\n");
